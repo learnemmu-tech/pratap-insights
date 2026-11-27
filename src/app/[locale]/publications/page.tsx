@@ -21,14 +21,16 @@ export default async function PublicationsPage({
   const t = await getTranslations();
   const page = Math.max(1, Number(query.page ?? "1") || 1);
   const pageSize = 9;
-  const result = await listPublicArticles(locale as Locale, {
-    query: query.q,
-    categorySlug: query.category,
-    sort: "latest",
-    page,
-    pageSize,
-  });
-  const categories = await listCategories(locale as Locale);
+  const [result, categories] = await Promise.all([
+    listPublicArticles(locale as Locale, {
+      query: query.q,
+      categorySlug: query.category,
+      sort: "latest",
+      page,
+      pageSize,
+    }),
+    listCategories(locale as Locale),
+  ]);
   const pages = Math.max(1, Math.ceil(result.total / pageSize));
   const href = (nextPage: number) => {
     const params = new URLSearchParams();
@@ -44,7 +46,7 @@ export default async function PublicationsPage({
       <p className="text-sm text-[#64716D]"><Link href="/" className="hover:text-[#0B6E66]">Home</Link> <span aria-hidden="true">/</span> Publications</p>
       <h1 className="mt-4 font-display text-4xl font-semibold text-[#123A35] sm:text-5xl">Publications</h1>
       <p className="mt-3 max-w-2xl text-[#64716D]">Articles, reviews and explainers written to be read carefully. Sample entries are marked in the article text and are not clinical advice.</p>
-      <form action="/publications" className="mt-8 flex flex-col gap-3 sm:flex-row">
+      <form action={`/${locale}/publications`} className="mt-8 flex flex-col gap-3 sm:flex-row">
         <label className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#64716D]" aria-hidden />
           <input name="q" defaultValue={query.q ?? ""} placeholder={t("archive.search")} className="h-11 w-full rounded-md border border-[#E4E8E5] bg-white pr-3 pl-9 text-sm text-[#26332F] outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0B6E66]" />

@@ -5,7 +5,7 @@ import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/routing";
 import { getDoctor } from "@/lib/content/queries";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const serif = Source_Serif_4({ subsets: ["latin"], weight: ["600", "700"] });
 

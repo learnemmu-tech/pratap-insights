@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/public/article-body";
@@ -36,7 +37,7 @@ function listItems(content: unknown) {
   return paragraphs.slice(0, 3);
 }
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params;
@@ -107,7 +108,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
         </div>
         {article.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={article.imageUrl} alt={article.imageAlt || ""} className="mt-5 aspect-[16/9] w-full rounded-lg object-cover" />
+          <span className="relative mt-5 block aspect-[16/9] w-full overflow-hidden rounded-lg">
+            <Image src={article.imageUrl} alt={article.imageAlt || ""} fill priority sizes="(min-width: 1080px) 1080px, 100vw" className="object-cover" />
+          </span>
         ) : null}
         {article.youtubeId ? (
           <div className="mt-4 aspect-video overflow-hidden rounded-lg bg-black">

@@ -45,7 +45,7 @@ export default async function CategoryPage({
       <p className="text-sm text-[#64716D]"><Link href="/" className="hover:text-[#0B6E66]">Home</Link> <span aria-hidden="true">/</span> <Link href="/categories" className="hover:text-[#0B6E66]">Categories</Link> <span aria-hidden="true">/</span> {category.name}</p>
       <h1 className="mt-4 font-display text-4xl font-semibold text-[#123A35]">{category.name}</h1>
       {category.description ? <p className="mt-3 max-w-2xl text-[#64716D]">{category.description}</p> : null}
-      <form className="mt-8 flex flex-col gap-3 sm:flex-row" action={`/categories/${slug}`}>
+      <form className="mt-8 flex flex-col gap-3 sm:flex-row" action={`/${locale}/categories/${slug}`}>
         <label className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-[#64716D]" aria-hidden />
           <input name="q" defaultValue={query.q ?? ""} placeholder="Search this topic" className="h-11 w-full rounded-md border border-[#E4E8E5] bg-white pr-3 pl-9 text-sm outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0B6E66]" />

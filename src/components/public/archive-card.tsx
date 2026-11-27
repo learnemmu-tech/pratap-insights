@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import type { PublicArticle } from "@/lib/content/queries";
 
@@ -5,10 +6,9 @@ export function ArchiveCard({ article, date }: { article: PublicArticle; date: s
   return (
     <article className="flex h-full flex-col">
       <Link href={`/publications/${article.slug}`} className="flex h-full flex-col rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0B6E66]">
-        <span className="block aspect-[16/10] overflow-hidden rounded-lg bg-[#F3F3F3]">
+        <span className="relative block aspect-[16/10] overflow-hidden rounded-lg bg-[#F3F3F3]">
           {article.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={article.imageUrl} alt={article.imageAlt || ""} className="h-full w-full object-cover" />
+            <Image src={article.imageUrl} alt={article.imageAlt || ""} fill sizes="(min-width: 1024px) 360px, (min-width: 640px) 50vw, 100vw" className="object-cover" />
           ) : null}
         </span>
         <span className="flex flex-1 flex-col pt-3">

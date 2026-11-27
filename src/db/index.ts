@@ -12,7 +12,7 @@ export function getDb() {
   if (!globalForDb.db || globalForDb.url !== url) {
     void globalForDb.sql?.end({ timeout: 1 });
     globalForDb.url = url;
-    globalForDb.sql = postgres(url, { max: 5, connect_timeout: 10, prepare: false });
+    globalForDb.sql = postgres(url, { max: 1, idle_timeout: 20, connect_timeout: 10, prepare: false });
     globalForDb.db = drizzle(globalForDb.sql, { schema });
   }
   return globalForDb.db;

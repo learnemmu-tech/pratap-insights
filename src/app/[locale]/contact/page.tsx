@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { getSite } from "@/lib/content/queries";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

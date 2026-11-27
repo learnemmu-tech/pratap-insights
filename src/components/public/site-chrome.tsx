@@ -228,7 +228,7 @@ export function SiteFooter({ email, socials }: { email?: string; socials: { labe
         </div>
       </div>
       <div className="mx-auto max-w-[1200px] border-t border-[#E7E7E7] px-5 py-6 text-[13px] text-[#5F6764] sm:px-7">
-        <p className="max-w-3xl">Content published on Pratap Insights is intended for educational and informational purposes only and is not a substitute for professional medical advice, diagnosis or treatment.</p>
+        {/* <p className="max-w-3xl">Content published on Pratap Insights is intended for educational and informational purposes only and is not a substitute for professional medical advice, diagnosis or treatment.</p> */}
         <p className="mt-4">© {new Date().getFullYear()} Pratap Insights. {t("footer.rights")}</p>
       </div>
     </footer>

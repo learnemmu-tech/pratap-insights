@@ -49,7 +49,7 @@ export default async function CategoriesPage({
         <p className="mt-8 text-xs font-semibold tracking-[0.14em] text-[#0B6E66] uppercase">Explore</p>
         <h1 className="mt-3 text-4xl font-semibold text-[#123A35] sm:text-5xl" style={{ fontFamily: serif.style.fontFamily }}>Medical topics</h1>
         <p className="mt-4 max-w-xl text-[17px] leading-relaxed text-[#64716D]">Browse Pratap Insights by area of interest, from the operating theatre to the classroom.</p>
-        <form action="/categories" className="mt-6 flex max-w-xl gap-3">
+        <form action={`/${locale}/categories`} className="mt-6 flex max-w-xl gap-3">
           <label className="sr-only" htmlFor="topic-filter">Filter topics</label>
           <input id="topic-filter" name="q" defaultValue={query.q ?? ""} placeholder="Filter topics" className="h-11 min-w-0 flex-1 rounded-md border border-[#E4E8E5] bg-white px-3 text-[15px] text-[#26332F] outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0B6E66]" />
           <button className="h-11 shrink-0 rounded-md bg-[#0B6E66] px-5 text-[15px] font-semibold text-white hover:bg-[#085E58]">Filter</button>

@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, ilike, inArray, isNull, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, inArray, isNull, lte, or, sql } from "drizzle-orm";
 import { getDb } from "@/db";
 import {
   articleReferences,
@@ -14,8 +14,6 @@ import {
   doctorProfiles,
   mediaAssets,
   siteSettings,
-  tags,
-  articleTags,
   user,
 } from "@/db/schema";
 import { isPubliclyVisible } from "@/lib/articles/visibility";
@@ -101,23 +99,27 @@ const articleSelect = {
   )`,
 };
 
-function articleJoins(locale: string) {
-  const db = getDb();
-  if (!db) return null;
-  return db
-    .select(articleSelect)
-    .from(articles)
-    .innerJoin(
-      articleTranslations,
-      and(eq(articleTranslations.articleId, articles.id), eq(articleTranslations.locale, locale)),
-    )
-    .leftJoin(
-      categoryTranslations,
-      and(eq(categoryTranslations.categoryId, articles.categoryId), eq(categoryTranslations.locale, locale)),
-    )
-    .leftJoin(mediaAssets, eq(mediaAssets.id, articles.featuredImageId))
-    .leftJoin(user, eq(user.id, articles.authorId))
-    .where(isNull(articles.deletedAt));
+function publicArticleWhere(locale: string, options?: { categorySlug?: string; query?: string; articleIds?: string[] }) {
+  const filters = [
+    isNull(articles.deletedAt),
+    eq(articleTranslations.locale, locale),
+    inArray(articleTranslations.status, ["published", "scheduled"]),
+    lte(articleTranslations.publishedAt, new Date()),
+  ];
+  if (options?.categorySlug) filters.push(eq(categoryTranslations.slug, options.categorySlug));
+  if (options?.articleIds) filters.push(inArray(articles.id, options.articleIds.length ? options.articleIds : ["00000000-0000-0000-0000-000000000000"]));
+  const term = options?.query?.trim();
+  if (term) {
+    const pattern = `%${term.replace(/[%_]/g, "")}%`;
+    const match = or(
+      ilike(articleTranslations.title, pattern),
+      ilike(articleTranslations.excerpt, pattern),
+      ilike(articleTranslations.subtitle, pattern),
+      ilike(categoryTranslations.name, pattern),
+    );
+    if (match) filters.push(match);
+  }
+  return and(...filters);
 }
 
 export async function listPublicArticles(
@@ -125,47 +127,62 @@ export async function listPublicArticles(
   options?: {
     categorySlug?: string;
     query?: string;
+    articleIds?: string[];
     sort?: "latest" | "oldest" | "views";
     page?: number;
     pageSize?: number;
   },
 ) {
-  const query = articleJoins(locale);
-  if (!query) return { items: [] as PublicArticle[], total: 0 };
-  let rows: Awaited<typeof query>;
-  try {
-    rows = await query;
-  } catch {
-    return { items: [] as PublicArticle[], total: 0, page: options?.page ?? 1, pageSize: options?.pageSize ?? 9 };
-  }
-  let items = rows.map(mapArticle).filter((item): item is PublicArticle => Boolean(item));
-  if (options?.categorySlug) items = items.filter((item) => item.categorySlug === options.categorySlug);
-  if (options?.query) {
-    const q = options.query.toLowerCase();
-    items = items.filter((item) =>
-      [item.title, item.excerpt, item.subtitle, item.categoryName ?? ""].join(" ").toLowerCase().includes(q),
-    );
-  }
-  if (options?.sort === "oldest") items.sort((a, b) => (a.publishedAt?.getTime() ?? 0) - (b.publishedAt?.getTime() ?? 0));
-  else if (options?.sort === "views") items.sort((a, b) => b.views - a.views || (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
-  else items.sort((a, b) => (b.publishedAt?.getTime() ?? 0) - (a.publishedAt?.getTime() ?? 0));
+  const db = getDb();
   const page = options?.page ?? 1;
   const pageSize = options?.pageSize ?? 9;
-  const total = items.length;
-  return { items: items.slice((page - 1) * pageSize, page * pageSize), total, page, pageSize };
+  if (!db) return { items: [] as PublicArticle[], total: 0, page, pageSize };
+  const where = publicArticleWhere(locale, options);
+  const order = options?.sort === "oldest" ? asc(articleTranslations.publishedAt) : desc(articleTranslations.publishedAt);
+  try {
+    const [rows, totals] = await Promise.all([
+      db
+        .select(articleSelect)
+        .from(articles)
+        .innerJoin(articleTranslations, and(eq(articleTranslations.articleId, articles.id), eq(articleTranslations.locale, locale)))
+        .leftJoin(categoryTranslations, and(eq(categoryTranslations.categoryId, articles.categoryId), eq(categoryTranslations.locale, locale)))
+        .leftJoin(mediaAssets, eq(mediaAssets.id, articles.featuredImageId))
+        .leftJoin(user, eq(user.id, articles.authorId))
+        .where(where)
+        .orderBy(order)
+        .limit(pageSize)
+        .offset((page - 1) * pageSize),
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(articles)
+        .innerJoin(articleTranslations, and(eq(articleTranslations.articleId, articles.id), eq(articleTranslations.locale, locale)))
+        .leftJoin(categoryTranslations, and(eq(categoryTranslations.categoryId, articles.categoryId), eq(categoryTranslations.locale, locale)))
+        .where(where),
+    ]);
+    const items = rows.map(mapArticle).filter((item): item is PublicArticle => Boolean(item));
+    return { items, total: totals[0]?.count ?? items.length, page, pageSize };
+  } catch {
+    return { items: [] as PublicArticle[], total: 0, page, pageSize };
+  }
 }
 
 export async function getArticleBySlug(locale: Locale, slug: string) {
-  const query = articleJoins(locale);
-  if (!query) return null;
-  let rows: Awaited<typeof query>;
+  const db = getDb();
+  if (!db) return null;
   try {
-    rows = await query;
+    const rows = await db
+      .select(articleSelect)
+      .from(articles)
+      .innerJoin(articleTranslations, and(eq(articleTranslations.articleId, articles.id), eq(articleTranslations.locale, locale)))
+      .leftJoin(categoryTranslations, and(eq(categoryTranslations.categoryId, articles.categoryId), eq(categoryTranslations.locale, locale)))
+      .leftJoin(mediaAssets, eq(mediaAssets.id, articles.featuredImageId))
+      .leftJoin(user, eq(user.id, articles.authorId))
+      .where(and(publicArticleWhere(locale), eq(articleTranslations.slug, slug)))
+      .limit(1);
+    return rows.map(mapArticle).find((item): item is PublicArticle => Boolean(item)) ?? null;
   } catch {
     return null;
   }
-  const match = rows.map(mapArticle).find((item) => item?.slug === slug);
-  return match ?? null;
 }
 
 export async function getArticleAlternates(articleId: string) {
@@ -181,9 +198,29 @@ export async function getArticleAlternates(articleId: string) {
 }
 
 export async function getAdjacentArticles(locale: Locale, publishedAt: Date | null) {
-  const { items } = await listPublicArticles(locale, { pageSize: 100 });
-  const index = items.findIndex((item) => item.publishedAt?.getTime() === publishedAt?.getTime());
-  return { previous: index > 0 ? items[index - 1] : null, next: index >= 0 ? items[index + 1] ?? null : null };
+  if (!publishedAt) return { previous: null, next: null };
+  const db = getDb();
+  if (!db) return { previous: null, next: null };
+  const base = () =>
+    db
+      .select(articleSelect)
+      .from(articles)
+      .innerJoin(articleTranslations, and(eq(articleTranslations.articleId, articles.id), eq(articleTranslations.locale, locale)))
+      .leftJoin(categoryTranslations, and(eq(categoryTranslations.categoryId, articles.categoryId), eq(categoryTranslations.locale, locale)))
+      .leftJoin(mediaAssets, eq(mediaAssets.id, articles.featuredImageId))
+      .leftJoin(user, eq(user.id, articles.authorId));
+  try {
+    const [previousRows, nextRows] = await Promise.all([
+      base().where(and(publicArticleWhere(locale), sql`${articleTranslations.publishedAt} > ${publishedAt}`)).orderBy(asc(articleTranslations.publishedAt)).limit(1),
+      base().where(and(publicArticleWhere(locale), sql`${articleTranslations.publishedAt} < ${publishedAt}`)).orderBy(desc(articleTranslations.publishedAt)).limit(1),
+    ]);
+    return {
+      previous: previousRows.map(mapArticle).find((item): item is PublicArticle => Boolean(item)) ?? null,
+      next: nextRows.map(mapArticle).find((item): item is PublicArticle => Boolean(item)) ?? null,
+    };
+  } catch {
+    return { previous: null, next: null };
+  }
 }
 
 export async function getRelatedArticles(locale: Locale, article: PublicArticle) {
@@ -213,8 +250,7 @@ export async function listCategories(locale: Locale) {
   } catch {
     return [];
   }
-  const { items } = await listPublicArticles(locale, { pageSize: 200 });
-  return rows.map((row) => ({ ...row, count: items.filter((item) => item.categorySlug === row.slug).length }));
+  return rows.map((row) => ({ ...row, count: 0 }));
 }
 
 export async function getSite() {
@@ -291,42 +327,9 @@ export async function popularArticles(locale: Locale) {
 }
 
 export async function searchArticles(locale: Locale, query: string) {
-  const db = getDb();
-  if (!db || !query.trim()) return [];
-  try {
-    return await searchArticleRows(db, locale, query);
-  } catch {
-    return [];
-  }
-}
-
-async function searchArticleRows(db: NonNullable<ReturnType<typeof getDb>>, locale: Locale, query: string) {
-  const pattern = `%${query.trim()}%`;
-  const rows = await db
-    .select({ id: articleTranslations.articleId })
-    .from(articleTranslations)
-    .where(
-      and(
-        eq(articleTranslations.locale, locale),
-        or(
-          ilike(articleTranslations.title, pattern),
-          ilike(articleTranslations.excerpt, pattern),
-          ilike(articleTranslations.subtitle, pattern),
-        ),
-      ),
-    );
-  const ids = new Set(rows.map((row) => row.id));
-  const tagRows = await db
-    .select({ articleId: articleTags.articleId })
-    .from(articleTags)
-    .innerJoin(tags, eq(tags.id, articleTags.tagId))
-    .where(and(eq(tags.locale, locale), ilike(tags.name, pattern)));
-  tagRows.forEach((row) => ids.add(row.articleId));
-  const { items } = await listPublicArticles(locale, { query, pageSize: 50 });
-  const extra = await listPublicArticles(locale, { pageSize: 200 });
-  const merged = [...items, ...extra.items.filter((item) => ids.has(item.id))];
-  const unique = new Map(merged.map((item) => [item.id, item]));
-  return [...unique.values()];
+  if (!query.trim()) return [];
+  const { items } = await listPublicArticles(locale, { query, pageSize: 24 });
+  return items;
 }
 
 export async function readerBookmarks(userId: string, locale: Locale) {
@@ -335,8 +338,8 @@ export async function readerBookmarks(userId: string, locale: Locale) {
   const rows = await db.select().from(bookmarks).where(eq(bookmarks.userId, userId));
   const ids = rows.map((row) => row.articleId);
   if (!ids.length) return [];
-  const { items } = await listPublicArticles(locale, { pageSize: 100 });
-  return items.filter((item) => ids.includes(item.id));
+  const { items } = await listPublicArticles(locale, { articleIds: ids, pageSize: ids.length });
+  return items;
 }
 
 export async function listArticleReferences(articleId: string) {

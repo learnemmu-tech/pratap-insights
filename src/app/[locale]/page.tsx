@@ -1,4 +1,5 @@
 import { Activity, ArrowRight, BookOpen, GraduationCap, MessageSquare, Search, ShieldPlus, Stethoscope, TrendingUp } from "lucide-react";
+import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { ArchiveCard } from "@/components/public/archive-card";
@@ -8,7 +9,7 @@ import type { Locale } from "@/i18n/routing";
 import { getDoctor, listCategories, listPublicArticles } from "@/lib/content/queries";
 import { formatDate } from "@/lib/utils";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 const icons = [Activity, Stethoscope, GraduationCap, Search, ShieldPlus, MessageSquare, BookOpen];
 
@@ -55,11 +56,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         {featured ? (
           <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)] lg:gap-10">
             <article>
-              <Link href={`/publications/${featured.slug}`} className="block overflow-hidden rounded-2xl bg-[#F3F3F3]">
+              <Link href={`/publications/${featured.slug}`} className="relative block aspect-[16/11] overflow-hidden rounded-2xl bg-[#F3F3F3]">
                 {featured.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={featured.imageUrl} alt={featured.imageAlt || ""} className="aspect-[16/11] w-full object-cover" />
-                ) : <span className="block aspect-[16/11] w-full bg-[#E7EEEC]" />}
+                  <Image src={featured.imageUrl} alt={featured.imageAlt || ""} fill sizes="(min-width: 1024px) 640px, 100vw" className="object-cover" />
+                ) : null}
               </Link>
               {featured.categoryName ? <p className="mt-4 text-[15px] text-[#1F8A84]">{featured.categoryName}</p> : null}
               <h2 className="mt-1 text-[1.85rem] leading-[1.15] font-bold tracking-[-0.03em] sm:text-[2.15rem]">
@@ -75,10 +75,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               <div className="flex flex-col gap-5">
                 {side.map((article) => (
                   <Link key={article.id} href={`/publications/${article.slug}`} className="group flex items-center gap-4">
-                    <span className="block h-[84px] w-[118px] shrink-0 overflow-hidden rounded-xl bg-[#F3F3F3] sm:h-[92px] sm:w-[132px]">
+                    <span className="relative block h-[84px] w-[118px] shrink-0 overflow-hidden rounded-xl bg-[#F3F3F3] sm:h-[92px] sm:w-[132px]">
                       {article.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={article.imageUrl} alt="" className="h-full w-full object-cover" />
+                        <Image src={article.imageUrl} alt="" fill sizes="132px" className="object-cover" />
                       ) : null}
                     </span>
                     <span className="min-w-0">
@@ -132,8 +131,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
               <Link href="/publications" className="mt-6 inline-flex h-11 items-center rounded-full bg-[#0C7A72] px-5 text-[15px] font-semibold text-white transition-colors hover:bg-[#09645E]">Explore publications</Link>
             </div>
             {featured?.imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={featured.imageUrl} alt={featured.imageAlt || ""} className="mt-8 h-52 w-full object-cover object-center sm:h-60" />
+              <span className="relative mt-8 block h-52 w-full sm:h-60">
+                <Image src={featured.imageUrl} alt={featured.imageAlt || ""} fill sizes="(min-width: 1024px) 640px, 100vw" className="object-cover object-center" />
+              </span>
             ) : <div className="mt-8 h-40" />}
           </div>
           <div className="flex flex-col gap-4">
@@ -155,7 +155,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <section className="mx-auto grid max-w-[1200px] items-center gap-12 px-5 py-16 sm:px-7 lg:grid-cols-[1fr_1.1fr] lg:py-14">
         {profile && doctor?.portrait ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={doctor.portrait} alt={profile.name || "Dr. Pratap"} className="aspect-square w-full rounded-md object-cover" />
+          <span className="relative block aspect-square w-full overflow-hidden rounded-md">
+            <Image src={doctor.portrait} alt={profile.name || "Dr. Pratap"} fill sizes="(min-width: 1024px) 520px, 100vw" className="object-cover" />
+          </span>
         ) : <PortraitPanel />}
         <div>
           <p className="text-xs font-semibold tracking-[0.12em] text-[#0B6E66] uppercase">About Pratap Insights</p>
@@ -201,9 +203,8 @@ function SectionHead({ eyebrow, title, text, action }: { eyebrow: string; title:
 function HeroArt() {
   return (
     <div className="relative">
-      <div className="aspect-[16/11] overflow-hidden rounded-md bg-[#123A35] lg:aspect-[4/4.6]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/dr-pratap-hero.jpg" alt="Dr. Pratap" className="h-full w-full object-cover object-[center_22%]" />
+      <div className="relative aspect-[16/11] overflow-hidden rounded-md bg-[#123A35] lg:aspect-[4/4.6]">
+        <Image src="/dr-pratap-hero.jpg" alt="Dr. Pratap" fill priority sizes="(min-width: 1024px) 540px, 100vw" className="object-cover object-[center_22%]" />
       </div>
       <div className="relative mt-4 max-w-[260px] border border-[#E4E8E5] border-l-[3px] border-l-[#0B6E66] bg-white px-5 py-4 text-[13px] text-[#64716D] lg:absolute lg:bottom-8 lg:-left-7 lg:mt-0">
         <b className="mb-0.5 block font-display text-[15px] font-semibold text-[#123A35]">Perspective, grounded in evidence</b>
