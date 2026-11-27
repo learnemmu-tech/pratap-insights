@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-navy: #1c2b3a;
+  --color-steel: #4a5568;
+  --color-teal: #c0623a;
+  --color-teal-dark: #a8512f;
+  --color-gold: #c8912a;
+  --color-gold-soft: #f5e8e2;
+  --color-paper: #f6f1e7;
+  --color-ink: #1c2b3a;
+  --color-muted: #66707a;
+  --color-line: #e2d9cc;
+  --color-primary: #c0623a;
+  --color-surface: #ffffff;
+  --color-raised: #fbf8f3;
+  --font-sans: var(--font-manrope), "Segoe UI", sans-serif;
+  --font-display: var(--font-manrope), "Segoe UI", sans-serif;
+  --font-editorial: var(--font-manrope), "Segoe UI", sans-serif;
+  --font-telugu: var(--font-telugu), var(--font-manrope), sans-serif;
+  --font-devanagari: var(--font-devanagari), var(--font-manrope), sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-weight: 400;
+}
+button, input, textarea, select { font-family: inherit; }
+h1, h2, h3, h4, h5, h6 { font-style: normal; letter-spacing: -0.02em; }
+em, i { font-style: normal; }
+html[lang="te"] .locale-copy,
+html[lang="te"] .article-body { font-family: var(--font-telugu); }
+html[lang="hi"] .locale-copy,
+html[lang="hi"] .article-body { font-family: var(--font-devanagari); }
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+.cl-modalContent:focus,
+.cl-modalContent:focus-visible,
+.cl-card:focus,
+.cl-card:focus-visible,
+.cl-cardBox:focus,
+.cl-cardBox:focus-visible {
+  outline: none;
+}
+.cl-logoBox {
+  background: url("/brand-mark.svg") center / 40px 40px no-repeat;
+  min-height: 48px;
+}
+.cl-logoImage {
+  width: 40px;
+  height: 40px;
+  opacity: 0;
+}
+.cl-socialButtonsBlockButtonText {
+  color: #1c2b3a !important;
+}
+
+.public-site {
+  --font-sans: var(--font-source-sans), "Segoe UI", sans-serif;
+  --font-display: var(--font-source-sans), "Segoe UI", sans-serif;
+  --color-brand: #0b6e66;
+  --color-ink: #171717;
+  --color-muted: #5f6764;
+  --color-line: #e7e7e7;
+  background: #fff;
+  color: #171717;
+  accent-color: #0b6e66;
+  font-family: var(--font-sans);
+  font-size: 17px;
+  line-height: 1.6;
+}
+.public-site :is(h1, h2, h3, h4) { font-family: var(--font-display); font-weight: 650; letter-spacing: -0.025em; color: #111; }
+.public-site a { text-underline-offset: 3px; }
+.public-site :focus-visible { outline-color: #07574f; }
+.public-site .text-muted { color: #64716d; }
+
+.article-body { font-family: var(--font-sans); font-size: 1.0625rem; font-weight: 400; line-height: 1.75; color: #26332f; }
+.article-body h2, .article-body h3, .article-body h1 { font-family: var(--font-display); font-weight: 600; line-height: 1.25; color: #1c2b3a; }
+.article-detail .article-body h2, .article-detail .article-body h3 { font-family: var(--font-display), "Segoe UI", sans-serif; color: #111; font-weight: 650; }
+.article-detail .article-body h2 { font-size: 1.45rem; margin-top: 1.6rem; margin-bottom: 0.6rem; }
+.article-detail .article-body { max-width: none; font-size: 1.0625rem; line-height: 1.7; color: #242424; }
+.article-detail .article-body p { margin-bottom: 0.9rem; }
+.article-detail .article-body ul, .article-detail .article-body ol { margin: 0.6rem 0 0.9rem; padding-left: 1.25rem; }
+.article-detail .article-body li { margin: 0.25rem 0; }
+.article-detail .article-body a:hover { color: #085e58; }
+.article-detail .article-body blockquote { margin: 1.5rem 0; border-left: 3px solid #111; padding-left: 1rem; font-size: 1.15rem; line-height: 1.5; color: #171717; }
+.article-detail .article-body a { color: #07574f; }
+@media print {
+  header, footer, .article-detail aside, .article-detail nav { display: none !important; }
+  .article-detail { background: #fff; }
+}
+.article-body h2 { margin-top: 40px; margin-bottom: 16px; font-size: 22px; }
+.article-body h3 { margin-top: 32px; margin-bottom: 12px; font-size: 19px; }
+.article-body p { margin-bottom: 20px; }
+@media (min-width: 640px) {
+  .article-body h2 { margin-top: 48px; margin-bottom: 20px; font-size: 24px; }
+  .article-body h3 { margin-top: 40px; margin-bottom: 16px; font-size: 20px; }
+  .article-body p { margin-bottom: 24px; }
+}
+.article-body ul, .article-body ol { margin: 1rem 0 1rem 1.25rem; }
+.article-body blockquote { margin: 1.5rem 0; padding-left: 1rem; border-left: 2px solid var(--color-gold); color: var(--color-steel); }
+.article-body table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-family: var(--font-sans); font-size: 0.95rem; }
+.article-body th, .article-body td { border-bottom: 1px solid var(--color-line); text-align: left; padding: 0.6rem 0.4rem; vertical-align: top; }
+.article-body a { color: #0b6e66; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+
+.ProseMirror { min-height: 320px; outline: none; }
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: #98a2b3;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+:root {
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+.dark {
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
