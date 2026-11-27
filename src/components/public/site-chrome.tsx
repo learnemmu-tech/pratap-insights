@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { ChevronDown, Globe, HeartPulse, Menu, X } from "lucide-react";
+import { ChevronDown, Globe, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter as useAppRouter } from "next/navigation";
@@ -44,13 +44,9 @@ export function SiteHeader({
   }, [isSignedIn, router]);
   return (
     <header className="sticky top-0 z-40 border-b border-[#E4E8E5] bg-white">
-      <div className="mx-auto flex h-16 max-w-[1200px] items-center gap-4 px-5 sm:px-7">
-        <Link href="/" className="flex min-w-0 shrink-0 items-center gap-3">
-          <span className="grid h-8 w-8 place-items-center rounded-md bg-[#111] text-white" aria-hidden><HeartPulse className="h-4 w-4" strokeWidth={1.8} /></span>
-          <span className="min-w-0">
-            <span className="block truncate font-display text-[22px] leading-none font-semibold tracking-[-0.01em] text-[#123A35]">Pratap Insights</span>
-            <span className="mt-1 hidden text-[10px] font-medium tracking-[0.14em] text-[#64716D] uppercase sm:block">Medical Knowledge</span>
-          </span>
+      <div className="mx-auto flex h-[88px] max-w-[1200px] items-center gap-6 px-5 sm:px-7">
+        <Link href="/" className="flex min-w-0 shrink-0 items-center" aria-label="Pratap Insights">
+          <img src="/pratap-insights-logo.jpg" alt="Pratap Insights" className="h-16 w-auto sm:h-[76px]" />
         </Link>
         <nav className="hidden flex-1 items-center justify-center gap-8 lg:flex" aria-label="Primary">
           {links.map(([href, key]) => {
@@ -210,13 +206,9 @@ export function SiteFooter({ email, socials }: { email?: string; socials: { labe
     <footer className="border-t border-[#E7E7E7] bg-white text-[#3A3A3A]">
       <div className="mx-auto grid max-w-[1200px] gap-10 px-5 py-16 sm:px-7 md:grid-cols-4">
         <div>
-          <div className="flex items-center gap-3">
-            <span className="grid h-8 w-8 place-items-center rounded-md bg-[#111] text-white" aria-hidden><HeartPulse className="h-4 w-4" strokeWidth={1.8} /></span>
-            <span>
-              <p className="text-[18px] leading-none font-semibold text-[#111]">Pratap Insights</p>
-              <p className="mt-1 text-[10px] tracking-[0.14em] text-[#87918D] uppercase">Medical Knowledge</p>
-            </span>
-          </div>
+          <Link href="/" aria-label="Pratap Insights">
+            <img src="/pratap-insights-logo.jpg" alt="Pratap Insights" className="h-20 w-auto sm:h-24" />
+          </Link>
           <p className="mt-4 max-w-xs text-sm leading-6">{t("footer.summary")}</p>
         </div>
         <div>

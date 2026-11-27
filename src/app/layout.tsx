@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   title: { default: "Pratap Insights", template: "%s · Pratap Insights" },
   description: "Medical knowledge, professional insights and clinical perspectives.",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+  icons: { icon: "/pratap-insights-logo.jpg", apple: "/pratap-insights-logo.jpg" },
 };
 
 export const viewport: Viewport = { themeColor: "#07574F" };
