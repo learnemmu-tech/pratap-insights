@@ -81,24 +81,14 @@ export function SiteHeader({
       </div>
       {open ? (
         <nav id="mobile-nav" className="border-t border-[#E4E8E5] bg-white px-5 py-2 lg:hidden" aria-label="Mobile">
-          {links.map(([href, key]) => (
+          {links.filter(([, key]) => key !== "categories").map(([href, key]) => (
             <Link
               key={href}
               href={href}
-              className={`block border-b border-[#E4E8E5] px-1 py-3.5 text-[15px] font-medium ${pathname === href || (key === "categories" && categoryActive) ? "text-[#0B6E66]" : "text-[#26332F]"}`}
+              className={`block border-b border-[#E4E8E5] px-1 py-3.5 text-[15px] font-medium ${pathname === href ? "text-[#0B6E66]" : "text-[#26332F]"}`}
               onClick={() => setOpen(false)}
             >
-              {key === "categories" ? "Medical Topics" : t(`nav.${key}`)}
-            </Link>
-          ))}
-          {categories.map((category) => (
-            <Link
-              key={category.slug}
-              href={`/categories/${category.slug}`}
-              className="block border-b border-[#E4E8E5] px-1 py-3 pl-4 text-sm text-[#64716D]"
-              onClick={() => setOpen(false)}
-            >
-              {category.name}
+              {t(`nav.${key}`)}
             </Link>
           ))}
         </nav>

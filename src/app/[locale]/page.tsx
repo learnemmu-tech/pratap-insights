@@ -32,19 +32,19 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <div className="text-[#26332F]">
       <section className="border-b border-[#E4E8E5]">
-        <div className="mx-auto grid max-w-[1200px] items-center gap-10 px-5 py-12 sm:px-7 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:py-[72px]">
-          <div>
+        <div className="mx-auto grid max-w-[1200px] items-center gap-8 px-5 py-8 sm:gap-10 sm:px-7 sm:py-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16 lg:py-[72px]">
+          <div className="min-w-0">
             <p className="text-xs font-semibold tracking-[0.12em] text-[#0B6E66] uppercase">Medical Knowledge & Professional Insights</p>
-            <h1 className="mt-4 max-w-[16ch] font-display text-[2.15rem] leading-[1.15] font-semibold tracking-[-0.02em] text-[#123A35] sm:text-[2.6rem] lg:text-[2.85rem]">Advancing how healthcare understands itself.</h1>
-            <p className="mt-5 max-w-[520px] text-[17px] leading-relaxed text-[#64716D] sm:text-[19px]">Pratap Insights publishes clear, evidence-informed articles and professional perspectives for clinicians, medical students and curious readers.</p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <h1 className="mt-4 max-w-none font-display text-[1.85rem] leading-[1.15] font-semibold tracking-[-0.02em] text-[#123A35] sm:max-w-[16ch] sm:text-[2.6rem] lg:text-[2.85rem]">Advancing how healthcare understands itself.</h1>
+            <p className="mt-4 max-w-[520px] text-[16px] leading-relaxed text-[#64716D] sm:mt-5 sm:text-[19px]">Pratap Insights publishes clear, evidence-informed articles and professional perspectives for clinicians, medical students and curious readers.</p>
+            <div className="mt-6 flex flex-wrap gap-3 sm:mt-8">
               <Link href="/publications" className="inline-flex h-10 items-center rounded-md bg-[#0B6E66] px-4 text-sm font-semibold text-white hover:bg-[#085E58]">Explore Publications</Link>
               <Link href="/about" className="inline-flex h-10 items-center rounded-md border border-[#123A35] px-4 text-sm font-semibold text-[#123A35] hover:bg-[#123A35] hover:text-white">About</Link>
             </div>
-            <div className="mt-12 flex flex-wrap gap-8 border-t border-[#E4E8E5] pt-7">
-              <div><strong className="block font-display text-2xl font-semibold text-[#123A35]">{categories.length}</strong><span className="text-[13px] text-[#64716D]">Editorial topics</span></div>
-              <div><strong className="block font-display text-2xl font-semibold text-[#123A35]">Evidence-first</strong><span className="text-[13px] text-[#64716D]">Editorial approach</span></div>
-              <div><strong className="block font-display text-2xl font-semibold text-[#123A35]">Weekly</strong><span className="text-[13px] text-[#64716D]">Publishing rhythm</span></div>
+            <div className="mt-8 grid grid-cols-3 gap-4 border-t border-[#E4E8E5] pt-5 sm:mt-12 sm:flex sm:flex-wrap sm:gap-8 sm:pt-7">
+              <div className="min-w-0"><strong className="block font-display text-xl font-semibold text-[#123A35] sm:text-2xl">{categories.length}</strong><span className="text-[12px] text-[#64716D] sm:text-[13px]">Editorial topics</span></div>
+              <div className="min-w-0"><strong className="block font-display text-xl font-semibold text-[#123A35] sm:text-2xl">Evidence-first</strong><span className="text-[12px] text-[#64716D] sm:text-[13px]">Editorial approach</span></div>
+              <div className="min-w-0"><strong className="block font-display text-xl font-semibold text-[#123A35] sm:text-2xl">Weekly</strong><span className="text-[12px] text-[#64716D] sm:text-[13px]">Publishing rhythm</span></div>
             </div>
           </div>
           <HeroArt />
@@ -201,18 +201,9 @@ function SectionHead({ eyebrow, title, text, action }: { eyebrow: string; title:
 function HeroArt() {
   return (
     <div className="relative">
-      <div className="aspect-[16/11] overflow-hidden rounded-md bg-[#123A35] lg:aspect-[4/4.6]" role="img" aria-label="Editorial illustration of a clinical cross and heart-rate trace">
-        <svg viewBox="0 0 400 460" className="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <defs>
-            <pattern id="home-grid" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M25 0H0v25" fill="none" stroke="#fff" strokeOpacity=".07" /></pattern>
-            <linearGradient id="home-fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#123A35" /><stop offset="1" stopColor="#0B6E66" /></linearGradient>
-          </defs>
-          <rect width="400" height="460" fill="url(#home-fill)" />
-          <rect width="400" height="460" fill="url(#home-grid)" />
-          <circle cx="290" cy="130" r="96" fill="none" stroke="#0B6E66" strokeWidth="1.5" strokeOpacity=".7" />
-          <path d="M290 96v68M256 130h68" stroke="#fff" strokeWidth="8" strokeLinecap="round" strokeOpacity=".85" />
-          <path d="M20 330h90l16-44 24 96 22-78 14 26h194" fill="none" stroke="#fff" strokeWidth="3" strokeLinejoin="round" />
-        </svg>
+      <div className="aspect-[16/11] overflow-hidden rounded-md bg-[#123A35] lg:aspect-[4/4.6]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/dr-pratap-hero.jpg" alt="Dr. Pratap" className="h-full w-full object-cover object-[center_22%]" />
       </div>
       <div className="relative mt-4 max-w-[260px] border border-[#E4E8E5] border-l-[3px] border-l-[#0B6E66] bg-white px-5 py-4 text-[13px] text-[#64716D] lg:absolute lg:bottom-8 lg:-left-7 lg:mt-0">
         <b className="mb-0.5 block font-display text-[15px] font-semibold text-[#123A35]">Perspective, grounded in evidence</b>
